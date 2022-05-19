@@ -1,6 +1,7 @@
 import requests
 import json
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import BeautifulSoup, NavigableString, ResultSet
+
 
 
 def wiki_request(nom):
@@ -18,31 +19,57 @@ def wiki_request(nom):
         "format": "json"
     }
 
-    R = S.get(url=URL, params=PARAMS)
+    R = S.get(url=URL, params=PARAMS)    
     DATA = R.json()
-    htmlblock = BeautifulSoup(DATA["parse"]["text"]["*"], 'html.parser')
 
+    if 'error' in DATA:
+        return_list.append('Genre Inconnu')
+        return_list.append('Traductions pas trouvés')
+        return return_list
+
+    htmlblock = BeautifulSoup(DATA["parse"]["text"]["*"], 'html.parser')
+    
+    
+  
 
     #####FIND GENDER
     genderBlock = htmlblock.find_all('span', class_='ligne-de-forme' )
-    return_list.append(genderBlock[0].contents[0].string)
+    if len(genderBlock) > 0:
+        return_list.append(genderBlock[0].contents[0].string)
+    else:
+        return_list.append('Genre inconnu')
 
     #####FIND TRANSLATIONS
-    translationsBlock = htmlblock.find_all('div', class_='translations' )
+    boites = htmlblock.find_all('div', class_='boite')    
+    temp = ResultSet(None)
+    
+    for boite in boites:
+         
+        if boite.find(string='traductions à trier') != None:
+            continue
+                
+        if boite.find('div', class_='translations') == None:
+            continue        
+        temp.append(boite.find('div', class_='translations'))            
 
-    list_all_lang = translationsBlock[0].find_all('li')
+    translationsBlock = temp
 
-    en_translations = ''
+    en_translations = 'Anglais : '
+
+    for list_all_lang in translationsBlock:
 
 
-    for group in list_all_lang:
-        #Select just the english translations
-        if group.find(string='Anglais') != None:
-            
-            for child in group.descendants:
-                if isinstance(child, NavigableString):
-                    en_translations += child
-                    
+        list_all_lang = list_all_lang.find_all('li')
+        for group in list_all_lang:
+            #Select just the english translations
+            if group.find(string='Anglais') != None :
+                
+                for child in group.descendants:
+                    if isinstance(child, NavigableString):
+                        if child != 'Anglais' and child != '\xa0: ':
+                            en_translations += child
+                en_translations += ' '
+
     return_list.append(en_translations.replace(u'\xa0', u' '))
 
     return return_list
