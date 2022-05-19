@@ -16,6 +16,7 @@ for result in htmlblock:
                     noms_dict[tag.contents[0]] = tag.attrs['href']
 
 
+
 #Save dict to json
 json.dump( noms_dict, open( "dict.json", 'w' ) )
 
