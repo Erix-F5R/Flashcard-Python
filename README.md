@@ -2,7 +2,7 @@
 
 This two part program webscrapes from wiktionary.org to build Anki flashcards that quiz the user on french noun genders.
 
-Using python and the BeautifulSoup4 library, this program first constructs a dictionary from <a href="https://fr.wiktionary.org/wiki/Wiktionnaire:Liste_de_1750_mots_fran%C3%A7ais_les_plus_courants">a list of common french words.</a>
+Using python and the BeautifulSoup4 library, this program first constructs a dictionary or nouns from <a href="https://fr.wiktionary.org/wiki/Wiktionnaire:Liste_de_1750_mots_fran%C3%A7ais_les_plus_courants">a list of common french words.</a>
 
 Then it grabs the gender and english translations for each word from <a href="https://fr.wiktionary.org">fr.wikitionary.org</a> via a request using the Wikimedia API. 
 
